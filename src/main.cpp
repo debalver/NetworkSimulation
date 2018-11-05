@@ -2,10 +2,11 @@
 #include "random.h"
 #include "simulation.h"
 #include <iostream>
+#include <vector> 
 
 RandomNumbers RNG;
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv) { 
     Network net;
     Simulation sim(&net);
     int errcode = 0;

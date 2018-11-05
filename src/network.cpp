@@ -67,6 +67,7 @@ size_t Network::random_connect(const double& d)
 }
 size_t Network::set_values(const std::vector<double>& new_values)
 {
+	values.clear(); 
 	values = new_values; 
 	return new_values.size();  // A REVOIR, CAR JE DOIS RETOURNER LE NOMBRE DE VALEURS AFFECTÉ AVEC SUCCÈS, MAIS NORMALEMENT IL N'Y A PAS DE BUGS, NE COMPREND PAS L'UTILITÉ DU RETURN 
 }
