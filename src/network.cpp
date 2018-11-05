@@ -2,6 +2,7 @@
 #include "random.h" 
 #include <iostream> 
 #include <algorithm> 
+#include <iostream> 
 
 using namespace std; 
 
@@ -13,18 +14,21 @@ void Network::resize(const size_t& s)
 	nb.normal(values, 0, 1); 
 }
 bool Network::add_link(const size_t& n1, const size_t& n2)
-{
-	for(std::multimap<size_t, size_t>::iterator it = links.begin(); it != links.end(); ++it )
+{ 
+	/// on suppose que les noeuds ont le même numéros que les values, donc commencent à 0  
+	/// test if the two nodes aren't the same node 
+	if( n1 == n2 ) return false;		 
+	/// test if the node n1 and n2 exist = the values are not superior to the vector values (= size() -1) or inferior to 0 
+	if( ( ( n1 > values.size()-1 ) or ( n2 > values.size()-1 ) ) or ( (n1 < 0) or (n2 < 0) ) ) return false;  
+	/// On utilise un itérateur qui ne travaille que sur la clé du noeud sur lequel on veut itérer   
+	auto X = links.equal_range(n1); 
+	for( auto it = X.first; it != X.second; ++it)
 	{
-		/// test if the two nodes aren't the same node 
-		if( n1 == n2 ) return false; 
-		/// test if the node n1 and n2 exists = the values are not superior to the vector values or inferior to 0 
-		if( ( ( n1 > values.size() ) or ( n2 > values.size() ) ) or ( (n1 < 0) or (n2 < 0) ) ) return false; 
-		/// this if clause test if link already exist on both side
 		if( ( (it->first == n1) and (it->second == n2) ) or ( ( it->first == n2 )  and  ( it->second == n1 ) ) ) return false;
 	}
 	links.insert(std::pair<size_t, size_t>(n1, n2));
 	links.insert(std::pair<size_t, size_t>(n2, n1));
+	 
 	return true;
 }
 size_t Network::random_connect(const double& d)
@@ -41,18 +45,21 @@ size_t Network::random_connect(const double& d)
 	vector<int> degres(n);
 	nb.poisson(degres, d); 
 	/// le i représente le noeud sur lequel on travaille, allant de 0 à n-1
-	for(size_t i(0); i<n-1; ++i)
+	for(size_t i(0); i<n; ++i)
 	{  
 		/// si le degré est supérieur au nombre de voisins existant, on réduit le degré au nombre maximal de voisins 
-		if( degres[i] >= n ) degres[i] = n-1;   
-		while( degres[i] > 0 )
+		if( degres[i] >= n ) degres[i] = n-1;
+		size_t compteur(0);
+		/// on ajoute une deuxième condition au while pour éviter de terminer en boucle infinie     
+		while( degres[i] > 0 and compteur < n )
 		{
 			size_t node(nb.uniform_double(0, n-1)); 
-			if( (degres[node] > 0) and add_link(i, node)) /// Si add_link fonctionne et que node peut encore faire des liens, un lien a été créé pour le noeud i et node, donc on décrémente de 1 le nombre de voisin/degré de liaison 
+			/// Si add_link fonctionne, le lien est créé, donc on décrémente le nombre de lien qu'il reste à créer 
+			if(add_link(i, node))
 			{
 				--degres[i]; 
-				--degres[node];
-				++n_links; 
+				++n_links;
+				++compteur;  
 			}
 		}
 	}
@@ -85,7 +92,7 @@ double Network::value(const size_t& n) const
 std::vector<double> Network::sorted_values() const
 {
 	vector<double> copy(values); 
-	reverse(copy.begin(), copy.end());
+	sort(copy.begin(), copy.end(), greater<double>() );
 	return copy;  
 }
 std::vector<size_t> Network::neighbors(const size_t& n) const
