@@ -12,7 +12,7 @@ option(test "Build tests." ON)
 include_directories("/usr/local/include" ${CMAKE_SOURCE_DIR}/include)
 link_directories(${CMAKE_SOURCE_DIR}/lib)
 
-add_executable(NetSim src/main.cpp src/network.cpp src/random.cpp src src/simulation.cpp)
+add_executable(NetSim src/main.cpp src/random.cpp src/network.cpp src/simulation.cpp )
 
 if (test)
   enable_testing()
@@ -22,7 +22,7 @@ if (test)
     SET(GTEST_BOTH_LIBRARIES libgtest.a libgtest_main.a)
   endif(NOT GTEST_FOUND)
   include_directories(${GTEST_INCLUDE_DIRS})
-  add_executable(testNetSim src/test_main.cpp)
+  add_executable(testNetSim src/test_main.cpp src/network.cpp src/random.cpp)
   target_link_libraries(testNetSim ${GTEST_BOTH_LIBRARIES} pthread)
   add_test(Network_simulation testNetSim)
 endif(test)
@@ -33,4 +33,4 @@ if (DOXYGEN_FOUND)
                     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
                     COMMENT "Generating API documentation with Doxygen" VERBATIM)
 endif(DOXYGEN_FOUND)
-# Une ligne de commentaire pour voir si ça fait réagir le terminal 
+
